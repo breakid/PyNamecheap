@@ -1348,3 +1348,72 @@ class Api(object):
         return DomainDetails.from_dict(info_result)
     
     get_domain_info = domains_getInfo
+    
+    # https://www.namecheap.com/support/api/methods/domains-ns/create/
+    def domains_ns_create(self, domain: str, nameserver: str, ip: str):
+        """Creates a new nameserver
+        
+        **Example Usage**::
+        
+            >>> api = Api('user', 'key', '12.34.56.78')
+            >>> api.domains_ns_create('example.com', 'ns1.example.com', '98.76.54.32')
+            {'Domain': 'example.com', 'Nameserver': 'ns1.example.com', 'IP': '98.76.54.32', 'IsSuccess': 'true'}
+        """
+        sld, tld = domain.split(".")
+        payload = {"SLD": sld, "TLD": tld, "Nameserver": nameserver, "IP": ip}
+        
+        log.debug(f"Create Nameserver: {payload}")
+
+        return self.get_element_dict(self.call("namecheap.domains.ns.create", payload), 'DomainNSCreateResult')
+    
+    # https://www.namecheap.com/support/api/methods/domains-ns/getInfo/
+    def domains_ns_getInfo(self, domain: str, nameserver: str):
+        """Retrieves information about a registered nameserver
+        
+        **Example Usage**::
+        
+            >>> api = Api('user', 'key', '12.34.56.78')
+            >>> api.domains_ns_getInfo('example.com', 'ns1.example.com')
+            {'Domain': 'example.com', 'Nameserver': 'example.com', 'IP': '98.76.54.32'}
+        """
+        sld, tld = domain.split(".")
+        payload = {"SLD": sld, "TLD": tld, "Nameserver": nameserver}
+        
+        log.debug(f"Get Nameserver Info: {payload}")
+        
+        return self.get_element_dict(self.call("namecheap.domains.ns.getInfo", payload), 'DomainNSInfoResult')
+    
+    # https://www.namecheap.com/support/api/methods/domains-ns/update/
+    def domains_ns_update(self, domain: str, nameserver: str, old_ip: str, ip: str):
+        """Updates the IP for a nameserver
+        
+        **Example Usage**::
+        
+            >>> api = Api('user', 'key', '12.34.56.78')
+            >>> api.domains_ns_update('example.com', 'ns1.example.com', '98.76.54.32', '11.22.33.44')
+            {'Domain': '.example.com', 'Nameserver': 'ns1.example.com', 'IsSuccess': 'true'}
+        """
+        sld, tld = domain.split(".")
+        payload = {"SLD": sld, "TLD": tld, "Nameserver": nameserver, "OldIP": old_ip, "IP": ip}
+        
+        log.debug(f"Update Nameserver: {payload}")
+        
+        return self.get_element_dict(self.call("namecheap.domains.ns.update", payload), 'DomainNSUpdateResult')
+    
+    # https://www.namecheap.com/support/api/methods/domains-ns/delete/
+    def domains_ns_delete(self, domain, nameserver: str):
+        """Deletes a nameserver
+        
+        **Example Usage**::
+        
+            >>> api = Api('user', 'key', '12.34.56.78')
+            >>> api.domains_ns_delete('example.com', 'ns1.example.com')
+            {'Domain': 'example.com', 'Nameserver': 'example.com', 'IsSuccess': 'true'}
+        
+        """
+        sld, tld = domain.split(".")
+        payload = {"SLD": sld, "TLD": tld, "Nameserver": nameserver}
+        
+        log.debug(f"Delete Nameserver: {payload}")
+        
+        return self.get_element_dict(self.call("namecheap.domains.ns.delete", payload), 'DomainNSDeleteResult')
