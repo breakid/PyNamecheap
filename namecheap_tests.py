@@ -260,3 +260,37 @@ def test_list_of_dictionaries_to_numbered_payload():
     }
 
     assert_equal(result, expected_result)
+
+
+def test_domains_nameserver():
+    api = get_api()
+    domain_name = test_register_domain()
+    
+    nameserver = f'ns1.{domain_name}'
+    orig_ip = '1.2.3.4'
+    new_ip = '11.22.33.44'
+    
+    res = api.domains_ns_create(domain_name, nameserver=nameserver, ip=orig_ip)
+    
+    assert_equal(res['Domain'], domain_name)
+    assert_equal(res['Nameserver'], nameserver)
+    assert_equal(res['IP'], orig_ip)
+    ok_(is_true(res['IsSuccess']))
+    
+    res = api.domains_ns_update(domain_name, nameserver=nameserver, old_ip=orig_ip, ip=new_ip)
+    
+    assert_equal(res['Domain'], domain_name)
+    assert_equal(res['Nameserver'], nameserver)
+    ok_(is_true(res['IsSuccess']))
+    
+    res = api.domains_ns_getInfo(domain_name, nameserver=nameserver)
+    
+    assert_equal(res['Domain'], domain_name)
+    assert_equal(res['Nameserver'], nameserver)
+    assert_equal(res['IP'], new_ip)
+    
+    res = api.domains_ns_delete(domain_name, nameserver=nameserver)
+    
+    assert_equal(res['Domain'], domain_name)
+    assert_equal(res['Nameserver'], nameserver)
+    ok_(is_true(res['IsSuccess']))
